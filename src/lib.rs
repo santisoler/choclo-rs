@@ -56,9 +56,26 @@ fn increment_by_one<'py>(py: Python<'py>, x: PyReadonlyArray1<f64>) -> &'py PyAr
     result.into_pyarray(py)
 }
 
+#[pyfunction]
+fn add<'py>(
+    _py: Python<'py>,
+    x: PyReadonlyArray1<f64>,
+    y: PyReadonlyArray1<f64>,
+    result: &PyArray1<f64>,
+) {
+    // Add the element-wise sum of two arrays into a running result array
+    let x = x.as_array();
+    let y = y.as_array();
+    let mut result = unsafe { result.as_array_mut() };
+    for i in 0..x.len() {
+        result[i] += x[i] + y[i]
+    }
+}
+
 /// A Python module implemented in Rust.
 #[pymodule]
 fn choclors(_py: Python, m: &PyModule) -> PyResult<()> {
+    m.add_function(wrap_pyfunction!(add, m)?)?;
     m.add_function(wrap_pyfunction!(max, m)?)?;
     m.add_function(wrap_pyfunction!(increment_by_one, m)?)?;
 
