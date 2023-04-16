@@ -1,4 +1,4 @@
-use numpy::PyReadonlyArrayDyn;
+use numpy::{IntoPyArray, PyArray1, PyReadonlyArray1, PyReadonlyArrayDyn};
 use pyo3::prelude::*;
 
 // const G: f64 = 1e-6;
@@ -36,7 +36,7 @@ use pyo3::prelude::*;
 // }
 
 #[pyfunction]
-fn max<'py>(py: Python<'py>, x: PyReadonlyArrayDyn<f64>) -> f64 {
+fn max<'py>(_py: Python<'py>, x: PyReadonlyArrayDyn<f64>) -> f64 {
     // Compute max value of an array
     let array = x.as_array();
     let mut max = &array[0];
@@ -48,10 +48,19 @@ fn max<'py>(py: Python<'py>, x: PyReadonlyArrayDyn<f64>) -> f64 {
     *max
 }
 
+#[pyfunction]
+fn increment_by_one<'py>(py: Python<'py>, x: PyReadonlyArray1<f64>) -> &'py PyArray1<f64> {
+    // Return array whose elements had been incremented by one
+    let x = x.as_array();
+    let result = x.map(|i| i + 1.0);
+    result.into_pyarray(py)
+}
+
 /// A Python module implemented in Rust.
 #[pymodule]
 fn choclors(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(max, m)?)?;
+    m.add_function(wrap_pyfunction!(increment_by_one, m)?)?;
 
     Ok(())
 }
