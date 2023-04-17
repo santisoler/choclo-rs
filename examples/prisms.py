@@ -38,25 +38,30 @@ n_points = 200
 points = np.array(vd.scatter_points(region, size=n_points, extra_coords=-10))
 masses = 1e6 * np.ones(n_points)
 
-start = time.time()
-result_rust = points_gz(easting, northing, upward, points, masses)
-result_rust = result_rust.reshape(grid_coords[0].shape)
-end = time.time()
-print(f"Elapsed time (Rust): {end - start}s")
-
-# Run first time to compile
-result_numba = points_gz_choclo(easting, northing, upward, points, masses)
+# Run Numba
+result_numba = points_gz_choclo(easting, northing, upward, points, masses)  # build
 start = time.time()
 result_numba = points_gz_choclo(easting, northing, upward, points, masses)
-result_numba = result_rust.reshape(grid_coords[0].shape)
 end = time.time()
+result_numba = result_numba.reshape(grid_coords[0].shape)
 print(f"Elapsed time (Numba): {end - start}s")
 
+# Run Rust version
+start = time.time()
+result_rust = points_gz(easting, northing, upward, points, masses)
+end = time.time()
+result_rust = result_rust.reshape(grid_coords[0].shape)
+print(f"Elapsed time (Rust): {end - start}s")
+
+# Plot
 fig, (ax1, ax2) = plt.subplots(ncols=2, sharey=True)
+
 tmp = ax1.pcolormesh(*grid_coords[:2], result_rust)
+ax1.set_title("Rust")
 plt.colorbar(tmp, ax=ax1)
 
 tmp = ax2.pcolormesh(*grid_coords[:2], result_numba)
+ax2.set_title("Numba")
 plt.colorbar(tmp, ax=ax2)
 
 for ax in (ax1, ax2):
