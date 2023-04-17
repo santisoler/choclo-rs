@@ -1,6 +1,7 @@
 use ndarray::{Array, Array1, ArrayView1, ArrayView2};
 use numpy::{IntoPyArray, PyArray1, PyReadonlyArray1, PyReadonlyArray2, PyReadonlyArrayDyn};
 use pyo3::prelude::*;
+use rayon::prelude::*;
 
 const G: f64 = 6.673e-11;
 
@@ -32,21 +33,25 @@ fn _points_gz(
     let n_coords = easting.len();
     let n_points = masses.len();
     // Allocate results array
-    let mut result = Array::zeros(n_coords);
-    for i in 0..n_coords {
-        for j in 0..n_points {
-            result[i] += point_gz(
-                easting[i],
-                northing[i],
-                upward[i],
-                points[[0, j]],
-                points[[1, j]],
-                points[[2, j]],
-                masses[j],
-            )
-        }
-    }
-    result
+    let result: Vec<f64> = (0..n_coords)
+        .into_par_iter()
+        .map(|i| {
+            let mut r = 0.0;
+            for j in 0..n_points {
+                r += point_gz(
+                    easting[i],
+                    northing[i],
+                    upward[i],
+                    points[[0, j]],
+                    points[[1, j]],
+                    points[[2, j]],
+                    masses[j],
+                )
+            }
+            r
+        })
+        .collect();
+    Array::from_vec(result)
 }
 
 #[pyfunction]
