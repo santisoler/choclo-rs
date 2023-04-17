@@ -14,10 +14,11 @@ fn point_gz(
     mass: f64,
 ) -> f64 {
     // Compute gz field of a single point source on single observation point
-    let distance = (easting - easting_p).powi(2)
+    let distance = ((easting - easting_p).powi(2)
         + (northing - northing_p).powi(2)
-        + (upward - upward_p).powi(2);
-    G * mass * (upward - upward_p) / distance
+        + (upward - upward_p).powi(2))
+    .sqrt();
+    G * mass * (upward - upward_p) / distance.powi(3)
 }
 
 fn _points_gz(
