@@ -8,7 +8,7 @@ import choclo
 from choclors import points_gz
 
 
-@numba.jit(nopython=True, parallel=True)
+@numba.jit(nopython=True, parallel=False)
 def points_gz_choclo(easting, northing, upward, points, masses):
     n_coords = easting.size
     n_points = masses.size
