@@ -12,7 +12,7 @@ from choclors import points_gz
 def points_gz_choclo(easting, northing, upward, points, masses):
     n_coords = easting.size
     n_points = masses.size
-    result = np.ones_like(easting)
+    result = np.zeros_like(easting)
     for i in numba.prange(n_coords):
         for j in range(n_points):
             result[i] += -choclo.point.gravity_u(
