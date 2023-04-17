@@ -53,6 +53,8 @@ end = time.time()
 result_rust = result_rust.reshape(grid_coords[0].shape)
 print(f"Elapsed time (Rust): {end - start}s")
 
+print(f"Results are the same: {np.allclose(result_rust, result_numba)}")
+
 # Plot
 fig, (ax1, ax2) = plt.subplots(ncols=2, sharey=True)
 
