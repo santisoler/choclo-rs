@@ -52,7 +52,8 @@ northing = np.array([0.])
 upward = np.array([0.])
 points = np.array([0., 0., -10.])
 masses = np.array([1e6])
-result_rust = choclors.points_gz(easting, northing, upward, points, masses)
+
+result = choclors.points_gz(easting, northing, upward, points, masses)
 ```
 
 
